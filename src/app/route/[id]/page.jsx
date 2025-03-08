@@ -58,25 +58,20 @@ export default function RoutePage({ params }) {
     );
   }
 
-  // Create stats object from the route data
   const stats = {
     onTime: `${routeData?.rating || 0}/5`,
     overall: `${routeData?.rating || 0}/5`,
     reliability: `${routeData?.rating || 0}/5`
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gray-200 p-4 sm:p-6 md:p-8 lg:p-12">
       <div className="max-w-4xl mx-auto">
-        <RouteHeader 
-          id={routeData?.id || id} 
-          name={routeData?.name || `Route ${id}`} 
-          rating={routeData?.rating || 0} 
-        />
+        <RouteHeader id={id} rating={routeData?.rating || 0} />
         <RouteStats stats={stats} />
         <ReviewForm routeId={id} />
         <ReviewList reviews={routeData?.reviews || []} />
       </div>
     </div>
-  )
-} 
+  );
+}

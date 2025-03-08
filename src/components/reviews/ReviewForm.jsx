@@ -4,15 +4,39 @@ import { useState } from "react"
 import { StarIcon } from "lucide-react"
 import { Input } from "@/components/ui/input"
 
-export function ReviewForm({ routeId }) {
+export function ReviewForm({ routeId, onReviewSubmitted }) {
   const [rating, setRating] = useState(0)
   const [comment, setComment] = useState("")
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log({ routeId, rating, comment })
-    setRating(0)
-    setComment("")
+    try {
+      const response = await fetch(`http://localhost:8000/reviews`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          route_id: routeId,
+          rating,
+          comment,
+          user_name: "Anonymous", // You can modify this to get the actual user name
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to submit review")
+      }
+
+      // Reset form fields
+      setRating(0)
+      setComment("")
+
+      // Call the parent function to refresh reviews
+      onReviewSubmitted()
+    } catch (error) {
+      console.error("Error submitting review:", error)
+    }
   }
 
   return (
