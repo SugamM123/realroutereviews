@@ -7,10 +7,10 @@ from database.connection import get_db
 
 app = FastAPI()
 
-# Enable CORS
+# Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, replace with your frontend URL
+    allow_origins=["https://realroutereviews.vercel.app"],  # Your Vercel frontend URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
