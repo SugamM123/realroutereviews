@@ -15,20 +15,20 @@ DB_HOST = os.getenv("DB_HOST")
 DB_PORT = os.getenv("DB_PORT")
 
 def get_db():
-    # Only proceed if all required parameters are available
-    if all([DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT]):
+    try:
         conn = psycopg2.connect(
             dbname=DB_NAME,
             user=DB_USER,
             password=DB_PASSWORD,
             host=DB_HOST,
             port=DB_PORT,
-            sslmode='require',  # Ensure SSL is used for secure connections
-            cursor_factory=RealDictCursor  # This allows accessing columns by name
+            sslmode='require',  # Required for Neon
+            cursor_factory=RealDictCursor
         )
         return conn
-    else:
-        raise ValueError("Database connection parameters are missing")
+    except Exception as e:
+        print(f"Database connection error: {str(e)}")
+        raise
 
 def init_db():
     conn = get_db()
