@@ -3,6 +3,7 @@ from pathlib import Path
 import os
 import psycopg2
 from psycopg2.extras import RealDictCursor
+import json  # Import json to use json.dumps
 
 # Add the parent directory to the path so we can import from the api package
 api_dir = Path(__file__).parent.parent
@@ -36,105 +37,182 @@ def seed_routes_fixed():
         conn.close()
         return
     
-    # Sample routes data - copy this from your seed_data.py
+    # Sample routes data
     routes = [
         {
             "id": "01",
             "name": "Bonfire",
-            "description": "Route serving main campus and northside residence halls",
-            "stops": ["MSC", "Kleberg", "Northside Halls", "Kyle Field"],
-            "schedule": "Weekdays: 7am-10pm, Every 15 minutes"
+            "description": "On-campus route serving main campus areas",
+            "stops": json.dumps(["MSC", "Sbisa", "West Campus", "Main Campus"]),
+            "schedule": "Weekdays: Regular service with map and times available"
         },
         {
             "id": "03",
             "name": "Yell Practice",
-            "description": "Route serving west campus and research park",
-            "stops": ["MSC", "West Campus", "Research Park", "Easterwood"],
-            "schedule": "Weekdays: 7am-7pm, Every 20 minutes"
+            "description": "On-campus route serving academic areas",
+            "stops": json.dumps(["MSC", "Academic Plaza", "Main Campus"]),
+            "schedule": "Weekdays: Regular service with map and times available"
         },
         {
             "id": "04",
             "name": "Gig Em",
-            "description": "Route serving main campus and southside residence halls",
-            "stops": ["MSC", "Academic Plaza", "Southside Halls", "Reed Arena"],
-            "schedule": "Weekdays: 7am-10pm, Every 15 minutes"
+            "description": "On-campus route serving west campus areas",
+            "stops": json.dumps(["MSC", "West Campus", "Engineering Buildings"]),
+            "schedule": "Weekdays: Regular service with map and times available"
         },
         {
             "id": "05",
             "name": "Bush School",
-            "description": "Route serving Bush School and surrounding areas",
-            "stops": ["MSC", "Bush School", "Allen Building", "Park West"],
-            "schedule": "Weekdays: 8am-6pm, Every 30 minutes"
+            "description": "On-campus route serving Bush School and surrounding areas",
+            "stops": json.dumps(["MSC", "Bush School", "Research Park"]),
+            "schedule": "Weekdays: Regular service with map and times available"
+        },
+        {
+            "id": "06",
+            "name": "12th Man",
+            "description": "On-campus route serving athletic facilities",
+            "stops": json.dumps(["MSC", "Kyle Field", "Athletic Facilities"]),
+            "schedule": "Weekdays: Regular service with map and times available"
+        },
+        {
+            "id": "07",
+            "name": "Airport",
+            "description": "On-campus route serving Easterwood Airport",
+            "stops": json.dumps(["MSC", "Easterwood Airport", "Research Park"]),
+            "schedule": "Weekdays: Regular service with map and times available"
+        },
+        {
+            "id": "08",
+            "name": "Howdy",
+            "description": "On-campus route serving central campus areas",
+            "stops": json.dumps(["MSC", "Central Campus", "Student Services"]),
+            "schedule": "Weekdays: Regular service with map and times available"
         },
         {
             "id": "12",
             "name": "Reveille",
-            "description": "Express route between northside and main campus",
-            "stops": ["Northside Halls", "MSC", "Kyle Field"],
-            "schedule": "Weekdays: 7am-7pm, Every 10 minutes"
+            "description": "Off-campus route serving nearby residential areas",
+            "stops": json.dumps(["MSC", "Off-campus Housing", "Northgate"]),
+            "schedule": "Weekdays: Regular service with map and times available"
         },
         {
             "id": "15",
             "name": "Old Army",
-            "description": "Route serving Corps of Cadets areas",
-            "stops": ["Quad", "Military Walk", "MSC", "Kyle Field"],
-            "schedule": "Weekdays: 7am-7pm, Every 15 minutes"
+            "description": "Off-campus route serving residential areas",
+            "stops": json.dumps(["MSC", "Off-campus Housing", "Apartments"]),
+            "schedule": "Weekdays: Regular service with map and times available"
         },
         {
             "id": "22",
-            "name": "Century Tree",
-            "description": "Route serving central campus locations",
-            "stops": ["MSC", "Evans Library", "Academic Plaza", "YMCA Building"],
-            "schedule": "Weekdays: 7am-10pm, Every 10 minutes"
+            "name": "Excel",
+            "description": "Off-campus route serving south College Station",
+            "stops": json.dumps(["MSC", "South College Station", "Apartments"]),
+            "schedule": "Weekdays: Regular service with map and times available"
         },
         {
             "id": "26",
             "name": "Rudder",
-            "description": "Route serving east campus and veterinary school",
-            "stops": ["MSC", "Vet School", "East Campus", "Research Park"],
-            "schedule": "Weekdays: 7am-7pm, Every 20 minutes"
+            "description": "Off-campus route serving east College Station",
+            "stops": json.dumps(["MSC", "East College Station", "Apartments"]),
+            "schedule": "Weekdays: Regular service with map and times available"
+        },
+        {
+            "id": "27",
+            "name": "Ring Dance",
+            "description": "Off-campus route serving residential areas",
+            "stops": json.dumps(["MSC", "Off-campus Housing", "Shopping Areas"]),
+            "schedule": "Weekdays: Regular service with map and times available"
         },
         {
             "id": "31",
-            "name": "Howdy",
-            "description": "Route serving off-campus student housing",
-            "stops": ["The Rise", "The Stack", "Z Islander", "Campus"],
-            "schedule": "Weekdays: 7am-10pm, Every 15 minutes"
+            "name": "Elephant Walk",
+            "description": "Off-campus route serving southwest College Station",
+            "stops": json.dumps(["MSC", "Southwest College Station", "Apartments"]),
+            "schedule": "Weekdays: Regular service with map and times available"
+        },
+        {
+            "id": "34",
+            "name": "Fish Camp",
+            "description": "Off-campus route serving residential areas",
+            "stops": json.dumps(["MSC", "Off-campus Housing", "Apartments"]),
+            "schedule": "Weekdays: Regular service with map and times available"
+        },
+        {
+            "id": "35",
+            "name": "Hullabaloo",
+            "description": "Off-campus route serving popular student housing",
+            "stops": json.dumps(["MSC", "Student Apartments", "Northgate"]),
+            "schedule": "Weekdays: Regular service with map and times available"
         },
         {
             "id": "36",
-            "name": "Hullabaloo",
-            "description": "Route serving Northgate and surrounding areas",
-            "stops": ["Northgate", "MSC", "Kyle Field", "Reed Arena"],
-            "schedule": "Weekdays: 7am-2am, Every 15 minutes"
+            "name": "Matthew Gaines",
+            "description": "Off-campus route serving residential areas",
+            "stops": json.dumps(["MSC", "Off-campus Housing", "Apartments"]),
+            "schedule": "Weekdays: Regular service with map and times available"
+        },
+        {
+            "id": "40",
+            "name": "Century Tree",
+            "description": "Off-campus route serving residential areas",
+            "stops": json.dumps(["MSC", "Off-campus Housing", "Apartments"]),
+            "schedule": "Weekdays: Regular service with map and times available"
         },
         {
             "id": "47",
             "name": "RELLIS",
-            "description": "Route between main campus and RELLIS campus",
-            "stops": ["MSC", "RELLIS Campus"],
-            "schedule": "Weekdays: 7am-7pm, Every 30 minutes"
+            "description": "Off-campus route serving RELLIS Campus",
+            "stops": json.dumps(["MSC", "RELLIS Campus", "Research Facilities"]),
+            "schedule": "Weekdays: Regular service with map and times available"
         },
         {
             "id": "48",
             "name": "RELLIS Circulator",
-            "description": "Circulator route within RELLIS campus",
-            "stops": ["RELLIS Main", "RELLIS Research", "RELLIS Academic", "RELLIS Testing"],
-            "schedule": "Weekdays: 8am-6pm, Every 15 minutes"
+            "description": "Off-campus route circulating within RELLIS Campus",
+            "stops": json.dumps(["RELLIS Campus Buildings", "Research Facilities", "Academic Buildings"]),
+            "schedule": "Weekdays: Regular service with map and times available"
         },
         {
             "id": "01-04",
-            "name": "Bonfire & Gig 'em",
-            "description": "Combined route serving both north and south campus",
-            "stops": ["Northside Halls", "MSC", "Southside Halls", "Kyle Field"],
-            "schedule": "Weekends: 10am-8pm, Every 30 minutes"
+            "name": "Bonfire-Gig Em Nights & Weekends",
+            "description": "Combined night and weekend route",
+            "stops": json.dumps(["MSC", "Main Campus", "West Campus", "Engineering Buildings"]),
+            "schedule": "Nights & Weekends: Combined service with reduced frequency"
         },
         {
             "id": "03-05",
-            "name": "Yell Practice & Bush School",
-            "description": "Combined route serving west campus and Bush School",
-            "stops": ["MSC", "West Campus", "Bush School", "Research Park"],
-            "schedule": "Weekends: 10am-6pm, Every 30 minutes"
+            "name": "Yell Practice-Bush School Nights & Weekends",
+            "description": "Combined night and weekend route",
+            "stops": json.dumps(["MSC", "Academic Plaza", "Bush School", "Research Park"]),
+            "schedule": "Nights & Weekends: Combined service with reduced frequency"
+        },
+        {
+            "id": "15-35",
+            "name": "Old Army-Hullabaloo Nights & Weekends",
+            "description": "Combined night and weekend route",
+            "stops": json.dumps(["MSC", "Off-campus Housing", "Student Apartments", "Northgate"]),
+            "schedule": "Nights & Weekends: Combined service with reduced frequency"
+        },
+        {
+            "id": "22-27",
+            "name": "Excel-Ring Dance Nights & Weekends",
+            "description": "Combined night and weekend route",
+            "stops": json.dumps(["MSC", "South College Station", "Off-campus Housing", "Shopping Areas"]),
+            "schedule": "Nights & Weekends: Combined service with reduced frequency"
+        },
+        {
+            "id": "26-31",
+            "name": "Rudder-Elephant Walk Nights & Weekends",
+            "description": "Combined night and weekend route",
+            "stops": json.dumps(["MSC", "East College Station", "Southwest College Station", "Apartments"]),
+            "schedule": "Nights & Weekends: Combined service with reduced frequency"
+        },
+        {
+            "id": "47-48",
+            "name": "RELLIS-RELLIS Circulator Nights & Weekends",
+            "description": "Combined night and weekend route for RELLIS Campus",
+            "stops": json.dumps(["MSC", "RELLIS Campus", "Research Facilities", "Academic Buildings"]),
+            "schedule": "Nights & Weekends: Combined service with reduced frequency"
         }
     ]
     
