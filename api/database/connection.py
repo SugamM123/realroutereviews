@@ -6,7 +6,8 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
-# Database connection parameters
+# Get database connection parameters from environment variables
+# No default values for sensitive information
 DB_NAME = os.getenv("DB_NAME")
 DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
@@ -14,16 +15,20 @@ DB_HOST = os.getenv("DB_HOST")
 DB_PORT = os.getenv("DB_PORT")
 
 def get_db():
-    conn = psycopg2.connect(
-        dbname=DB_NAME,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        host=DB_HOST,
-        port=DB_PORT,
-        sslmode='require',  # Add this for Render
-        cursor_factory=RealDictCursor  # This allows accessing columns by name
-    )
-    return conn
+    # Only proceed if all required parameters are available
+    if all([DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT]):
+        conn = psycopg2.connect(
+            dbname=DB_NAME,
+            user=DB_USER,
+            password=DB_PASSWORD,
+            host=DB_HOST,
+            port=DB_PORT,
+            sslmode='require',  # Ensure SSL is used for secure connections
+            cursor_factory=RealDictCursor  # This allows accessing columns by name
+        )
+        return conn
+    else:
+        raise ValueError("Database connection parameters are missing")
 
 def init_db():
     conn = get_db()
