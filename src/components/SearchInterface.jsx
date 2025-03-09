@@ -2,6 +2,7 @@
 
 import { Input } from "@/components/ui/input"
 import Image from "next/image"
+import Link from "next/link"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 
@@ -39,13 +40,15 @@ export function SearchInterface() {
       <h2 className="text-lg text-center mb-4 mt-40">Meet the Dev</h2>
 
       <div className="flex justify-center mt-4">
-        <Image 
-          src="/dev.png" 
-          alt="Meet the Dev" 
-          width={150} 
-          height={150} 
-          className="rounded-full" 
-        />
+        <Link href="/about">
+          <Image 
+            src="/dev.png" 
+            alt="Meet the Dev" 
+            width={150} 
+            height={150} 
+            className="rounded-full cursor-pointer"
+          />
+        </Link>
       </div>
     </div>
   )
