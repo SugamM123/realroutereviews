@@ -6,6 +6,9 @@ import { RouteStats } from "@/components/route/RouteStats"
 import { ReviewList } from "@/components/reviews/ReviewList"
 import { ReviewForm } from "@/components/reviews/ReviewForm"
 import { getRouteById, getRouteReviews } from '@/lib/api'
+import { Button } from "@/components/ui/button"
+import { Home } from "lucide-react"
+import Link from "next/link"
 
 export default function RoutePage({ params }) {
   const { id } = params
@@ -83,6 +86,15 @@ export default function RoutePage({ params }) {
         ) : (
           <p className="text-gray-500">No reviews yet. Be the first to review this route!</p>
         )}
+      </div>
+
+      {/* Home button after any text car with more spacing from the review cards */}
+      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 mt-8">
+        <Link href="/">
+          <Button>
+            <Home /> Home
+          </Button>
+        </Link>
       </div>
     </div>
   )
