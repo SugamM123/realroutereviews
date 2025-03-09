@@ -12,7 +12,7 @@ def get_route(route_id: str):
                COALESCE(AVG(reviews.rating), 0) as avg_rating
         FROM routes 
         LEFT JOIN reviews ON routes.id = reviews.route_id
-        WHERE routes.id = ?
+        WHERE routes.id = %s
         GROUP BY routes.id
     ''', (route_id,))
     
@@ -24,7 +24,7 @@ def get_route(route_id: str):
     # Get reviews for the route
     cur.execute('''
         SELECT * FROM reviews 
-        WHERE route_id = ? 
+        WHERE route_id = %s 
         ORDER BY created_at DESC
     ''', (route_id,))
     
@@ -44,7 +44,7 @@ def create_review(route_id: str, rating: int, comment: str, user_name: str):
     
     cur.execute('''
         INSERT INTO reviews (route_id, rating, comment, user_name)
-        VALUES (?, ?, ?, ?)
+        VALUES (%s, %s, %s, %s)
     ''', (route_id, rating, comment, user_name))
     
     conn.commit()

@@ -10,7 +10,10 @@ app = FastAPI()
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://realroutereviews.vercel.app"],  # Your Vercel frontend URL
+    allow_origins=[
+        "https://realroutereviews.vercel.app",  # Your Vercel frontend URL
+        "http://localhost:3000",  # Add this for local development
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

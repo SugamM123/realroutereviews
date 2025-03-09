@@ -1,5 +1,5 @@
-const API_BASE_URL = 'https://realroutereviews-api.onrender.com'; // Replace with your actual Render URL
-// const API_BASE_URL = 'http://localhost:8000';
+// const API_BASE_URL = 'https://realroutereviews-api.onrender.com'; // Replace with your actual Render URL
+const API_BASE_URL = 'http://localhost:8000';
 
 export async function getRoutes() {
   try {

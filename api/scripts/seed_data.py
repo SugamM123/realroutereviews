@@ -30,92 +30,128 @@ def seed_database():
         {
             "id": "01",
             "name": "Bonfire",
-            "description": "Serves the Northside of campus and College Main area",
+            "description": "Servicing the MSC, Sbisa Dining Hall, West Campus Garage, and Reed Arena",
             "stops": json.dumps([
-                "MSC", "Kleberg", "Lot 30", "College Main", "The Gardens"
+                "MSC", "Sbisa Dining Hall", "West Campus Garage", "Reed Arena", "Bizzell Street"
             ]),
-            "schedule": "Weekdays: 7:00 AM - 6:00 PM, Every 10 minutes"
-        },
-        {
-            "id": "02",
-            "name": "Reveille",
-            "description": "Serves the Southside of campus and Southgate area",
-            "stops": json.dumps([
-                "MSC", "Kyle Field", "Reed Arena", "Southgate", "Olsen Field"
-            ]),
-            "schedule": "Weekdays: 7:00 AM - 6:00 PM, Every 10 minutes"
+            "schedule": "Fall & Spring: Weekdays 7:00 AM - 7:00 PM, Night Service until midnight"
         },
         {
             "id": "03",
-            "name": "Gig 'Em",
-            "description": "Serves West Campus and Research Park",
+            "name": "Yell Practice",
+            "description": "Servicing the MSC, School of Public Health, and School of Veterinary Medicine",
             "stops": json.dumps([
-                "MSC", "West Campus Library", "Research Park", "Easterwood Airport", "Bush School"
+                "MSC", "School of Public Health", "School of Veterinary Medicine"
             ]),
-            "schedule": "Weekdays: 7:00 AM - 6:00 PM, Every 15 minutes"
+            "schedule": "Fall & Spring: Weekdays 7:00 AM - 7:00 PM, Night Service until midnight"
         },
         {
             "id": "04",
-            "name": "Hullabaloo",
-            "description": "Express route between Northgate and main campus",
+            "name": "Gig Em",
+            "description": "Servicing Asbury St, Zachry, and The Gardens",
             "stops": json.dumps([
-                "Northgate", "MSC", "Kyle Field", "Evans Library"
+                "Asbury St", "Zachry", "The Gardens"
             ]),
-            "schedule": "Weekdays: 7:00 AM - 10:00 PM, Every 5 minutes"
+            "schedule": "Fall & Spring: Weekdays 7:00 AM - 7:00 PM, Night Service until midnight"
+        },
+        {
+            "id": "05",
+            "name": "Bush School",
+            "description": "Servicing ILCB, Reed Arena, Bush School, and Technology Loop",
+            "stops": json.dumps([
+                "ILCB", "Reed Arena", "Bush School", "Technology Loop"
+            ]),
+            "schedule": "Fall & Spring: Weekdays 7:00 AM - 7:00 PM, Night Service until midnight"
         },
         {
             "id": "12",
-            "name": "Reveille Express",
-            "description": "Express route serving key locations on Southside",
+            "name": "Reveille",
+            "description": "Servicing Blinn College",
             "stops": json.dumps([
-                "MSC", "Kyle Field", "Reed Arena", "Southgate"
+                "Blinn College"
             ]),
-            "schedule": "Weekdays: 7:00 AM - 6:00 PM, Every 7 minutes"
+            "schedule": "Fall & Spring: Weekdays 7:00 AM - 7:00 PM"
         },
         {
             "id": "15",
             "name": "Old Army",
-            "description": "Serves off-campus student housing areas",
+            "description": "Servicing Midtown Park in Bryan",
             "stops": json.dumps([
-                "MSC", "The Tradition", "Park West", "Campus Village", "The Rise"
+                "Midtown Park in Bryan"
             ]),
-            "schedule": "Weekdays: 7:00 AM - 10:00 PM, Every 15 minutes"
+            "schedule": "Fall & Spring: Weekdays 7:00 AM - 7:00 PM, Night Service until midnight"
         },
         {
             "id": "22",
             "name": "Century Tree",
-            "description": "Circular route around main campus",
+            "description": "Servicing Southwest College Station extending to The Barracks",
             "stops": json.dumps([
-                "MSC", "Evans Library", "Academic Building", "Kyle Field", "Zachry Engineering"
+                "Southwest College Station", "The Barracks"
             ]),
-            "schedule": "Weekdays: 7:00 AM - 6:00 PM, Every 10 minutes"
+            "schedule": "Fall & Spring: Weekdays 7:00 AM - 7:00 PM, Night Service until midnight"
         },
         {
             "id": "26",
-            "name": "Aggie Spirit",
-            "description": "Serves apartment complexes along Texas Avenue",
+            "name": "Rudder",
+            "description": "Servicing East College Station extending to Wolf Pen Creek",
             "stops": json.dumps([
-                "MSC", "Texas Avenue", "HEB", "Post Oak Mall", "Walmart"
+                "East College Station", "Wolf Pen Creek", "Anderson St"
             ]),
-            "schedule": "Weekdays: 7:00 AM - 10:00 PM, Every 20 minutes"
+            "schedule": "Fall & Spring: Weekdays 7:00 AM - 7:00 PM, Night Service until midnight"
         },
         {
             "id": "31",
             "name": "Howdy",
-            "description": "Serves the far north apartment complexes",
+            "description": "Servicing WCG, the Rec, and Park West",
             "stops": json.dumps([
-                "MSC", "Northpoint Crossing", "The Stack", "Callaway House", "Northgate"
+                "West Campus Garage", "The Rec", "Park West"
             ]),
-            "schedule": "Weekdays: 7:00 AM - 10:00 PM, Every 15 minutes"
+            "schedule": "Fall & Spring: Weekdays 7:00 AM - 7:00 PM, Night Service until midnight"
+        },
+        {
+            "id": "36",
+            "name": "Hullabaloo",
+            "description": "Servicing Southwest College Station extending to University Trails",
+            "stops": json.dumps([
+                "Southwest College Station", "University Trails"
+            ]),
+            "schedule": "Fall & Spring: Weekdays 7:00 AM - 7:00 PM, Night Service until midnight"
+        },
+        {
+            "id": "47",
+            "name": "RELLIS",
+            "description": "Servicing RELLIS campus and the Health Science Center",
+            "stops": json.dumps([
+                "RELLIS campus", "Health Science Center", "Blinn/RELLIS stop"
+            ]),
+            "schedule": "Fall & Spring: Weekdays 7:00 AM - 7:00 PM"
+        },
+        {
+            "id": "48",
+            "name": "RELLIS Circulator",
+            "description": "A circular route servicing only RELLIS campus",
+            "stops": json.dumps([
+                "RELLIS campus"
+            ]),
+            "schedule": "Fall & Spring: Weekdays 7:00 AM - 7:00 PM"
         },
         {
             "id": "01-04",
-            "name": "Bonfire-Hullabaloo Combo",
-            "description": "Combined route serving both Bonfire and Hullabaloo areas",
+            "name": "Bonfire & Gig 'em",
+            "description": "Night service combination route",
             "stops": json.dumps([
-                "MSC", "Kleberg", "Lot 30", "College Main", "The Gardens", "Northgate", "Kyle Field", "Evans Library"
+                "MSC", "Sbisa Dining Hall", "West Campus Garage", "Reed Arena", "Asbury St", "Zachry", "The Gardens"
             ]),
-            "schedule": "Weekends: 10:00 AM - 6:00 PM, Every 20 minutes"
+            "schedule": "Night Service: 7:00 PM - midnight"
+        },
+        {
+            "id": "03-05",
+            "name": "Yell Practice & Bush School",
+            "description": "Night service combination route",
+            "stops": json.dumps([
+                "MSC", "School of Public Health", "School of Veterinary Medicine", "ILCB", "Reed Arena", "Bush School", "Technology Loop"
+            ]),
+            "schedule": "Night Service: 7:00 PM - midnight"
         }
     ]
     

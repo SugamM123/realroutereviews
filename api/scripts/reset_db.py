@@ -3,13 +3,13 @@ from pathlib import Path
 api_dir = Path(__file__).parent.parent
 sys.path.append(str(api_dir))
 
-from database.connection import DB_PATH, init_db
+from database.connection import init_db
 
 def reset_database():
     # Remove the existing database file
-    if DB_PATH.exists():
-        print(f"Removing existing database: {DB_PATH}")
-        DB_PATH.unlink()
+    # if DB_PATH.exists():
+    #     print(f"Removing existing database: {DB_PATH}")
+    #     DB_PATH.unlink()
     
     # Create new database
     print("Initializing new database...")
