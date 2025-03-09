@@ -74,3 +74,45 @@ export async function createReview(reviewData) {
     throw error;
   }
 }
+
+export async function getRouteById(id) {
+  console.log(`Fetching route with ID: ${id} from ${API_BASE_URL}/routes/${id}`);
+  try {
+    const response = await fetch(`${API_BASE_URL}/routes/${id}`);
+    console.log('Response status:', response.status);
+    
+    const text = await response.text();
+    console.log('Raw response:', text);
+    
+    let data;
+    try {
+      data = JSON.parse(text);
+      console.log('Parsed data:', data);
+    } catch (e) {
+      console.error('Failed to parse JSON:', e);
+      throw new Error(`Failed to parse response for route ${id}`);
+    }
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch route with ID ${id}`);
+    }
+    
+    return data;
+  } catch (error) {
+    console.error(`Error fetching route ${id}:`, error);
+    throw new Error(`Failed to fetch route with ID ${id}`);
+  }
+}
+
+export async function getRouteReviews(routeId) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/routes/${routeId}/reviews`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch reviews for route ${routeId}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error(`Error fetching reviews for route ${routeId}:`, error);
+    throw new Error(`Failed to fetch reviews for route ${routeId}`);
+  }
+}

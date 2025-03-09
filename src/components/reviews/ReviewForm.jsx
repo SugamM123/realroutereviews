@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { StarIcon } from "lucide-react"
+import { API_BASE_URL } from '@/lib/api'
 
 export function ReviewForm({ routeId, onReviewAdded }) {
   const [rating, setRating] = useState(5)
@@ -21,7 +22,7 @@ export function ReviewForm({ routeId, onReviewAdded }) {
     const finalUserName = userName.trim() || "Anonymous"
 
     try {
-      const response = await fetch('http://localhost:8000/reviews', {
+      const response = await fetch(`${API_BASE_URL}/reviews`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

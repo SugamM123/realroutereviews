@@ -214,6 +214,29 @@ def search_routes(q: str):
     finally:
         conn.close()
 
+@app.get("/routes/search/{name}")
+def search_route_by_name(name: str):
+    conn = get_db()
+    cur = conn.cursor()
+    
+    # Search for routes with matching name (case insensitive)
+    cur.execute("""
+        SELECT * FROM routes 
+        WHERE LOWER(name) = LOWER(%s)
+    """, (name,))
+    
+    route = cur.fetchone()
+    conn.close()
+    
+    if not route:
+        raise HTTPException(status_code=404, detail=f"Route with name {name} not found")
+    
+    # Convert row to dict and parse stops from JSON
+    route_dict = dict(route)
+    route_dict['stops'] = json.loads(route_dict['stops'])
+    
+    return route_dict
+
 # Run the app with uvicorn
 if __name__ == "__main__":
     import uvicorn
