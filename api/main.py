@@ -151,15 +151,12 @@ def create_review(review: ReviewCreate):
     
     try:
         cur.execute("""
-            INSERT INTO reviews (route_id, rating, punctuality, cleanliness, crowdedness, comment, user_name)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO reviews (route_id, rating, comment, user_name)
+            VALUES (%s, %s, %s, %s)
             RETURNING *
         """, (
             review.route_id,
             review.rating,
-            review.punctuality,
-            review.cleanliness,
-            review.crowdedness,
             review.comment,
             review.user_name
         ))
@@ -167,19 +164,24 @@ def create_review(review: ReviewCreate):
         conn.commit()
         new_review = cur.fetchone()
         
-        return {
+        if not new_review:
+            raise HTTPException(status_code=500, detail="Failed to create review")
+        
+        # Convert to dict and ensure all fields are present
+        result = {
             "id": new_review["id"],
             "route_id": new_review["route_id"],
             "rating": new_review["rating"],
-            "punctuality": new_review["punctuality"],
-            "cleanliness": new_review["cleanliness"],
-            "crowdedness": new_review["crowdedness"],
             "comment": new_review["comment"],
             "user_name": new_review["user_name"],
             "created_at": new_review["created_at"].isoformat() if new_review["created_at"] else None
         }
+        
+        return result
     except Exception as e:
         conn.rollback()
+        # Log the actual error
+        print(f"Error creating review: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         conn.close()
