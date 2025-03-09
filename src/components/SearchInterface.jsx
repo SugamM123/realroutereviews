@@ -40,7 +40,7 @@ export function SearchInterface() {
 
       <div className="flex justify-center mt-4">
         <Image 
-          src="/dev.jpg" 
+          src="/dev.png" 
           alt="Meet the Dev" 
           width={150} 
           height={150} 
