@@ -15,11 +15,11 @@ from database.connection import init_db
 def get_db():
     """Get a database connection using current environment variables."""
     return psycopg2.connect(
-        dbname=os.environ.get("DB_NAME", "rrr"),
-        user=os.environ.get("DB_USER", "sugammishra"),
-        password=os.environ.get("DB_PASSWORD", ""),
-        host=os.environ.get("DB_HOST", "localhost"),
-        port=os.environ.get("DB_PORT", "5432"),
+        dbname=os.getenv("DB_NAME"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        host=os.getenv("DB_HOST"),
+        port=os.getenv("DB_PORT"),
         cursor_factory=RealDictCursor
     )
 
@@ -252,18 +252,18 @@ def seed_reviews_fixed():
     existing_routes = [row['id'] for row in cur.fetchall()]
     print(f"Existing routes: {existing_routes}")
     
-    # Sample reviews data - copy this from your seed_data.py
+    # Sample reviews data
     reviews = [
-        {"route_id": "01", "rating": 5, "comment": "Great route, always on time!", "user_name": "John Aggie"},
-        {"route_id": "01", "rating": 4, "comment": "Reliable and clean buses.", "user_name": "Sarah Student"},
-        {"route_id": "02", "rating": 3, "comment": "Sometimes late during peak hours.", "user_name": "Mike Engineer"},
-        {"route_id": "03", "rating": 5, "comment": "Perfect for getting to west campus quickly.", "user_name": "Lisa Grad"},
-        {"route_id": "04", "rating": 4, "comment": "Good service to southside.", "user_name": "Tom Junior"},
-        {"route_id": "05", "rating": 5, "comment": "Makes getting to Bush School easy.", "user_name": "Policy Student"},
-        {"route_id": "12", "rating": 5, "comment": "Fast and frequent service!", "user_name": "Northside Resident"},
-        {"route_id": "15", "rating": 4, "comment": "Great for Corps activities.", "user_name": "Cadet Jones"},
-        {"route_id": "22", "rating": 5, "comment": "Best route for central campus.", "user_name": "Library Lover"},
-        {"route_id": "26", "rating": 3, "comment": "Wish it ran more frequently.", "user_name": "Vet Student"}
+        {"route_id": "01", "rating": 5, "comment": "Great route, always on time!", "user_name": "User1"},
+        {"route_id": "01", "rating": 4, "comment": "Reliable and clean buses.", "user_name": "User2"},
+        {"route_id": "02", "rating": 3, "comment": "Sometimes late during peak hours.", "user_name": "User3"},
+        {"route_id": "03", "rating": 5, "comment": "Perfect for getting to west campus quickly.", "user_name": "User4"},
+        {"route_id": "04", "rating": 4, "comment": "Good service to southside.", "user_name": "User5"},
+        {"route_id": "05", "rating": 5, "comment": "Makes getting to Bush School easy.", "user_name": "User6"},
+        {"route_id": "12", "rating": 5, "comment": "Fast and frequent service!", "user_name": "User7"},
+        {"route_id": "15", "rating": 4, "comment": "Great for Corps activities.", "user_name": "User8"},
+        {"route_id": "22", "rating": 5, "comment": "Best route for central campus.", "user_name": "User9"},
+        {"route_id": "26", "rating": 3, "comment": "Wish it ran more frequently.", "user_name": "User10"}
     ]
     
     # Filter reviews to only include those for existing routes
@@ -287,13 +287,6 @@ def seed_reviews_fixed():
 
 def setup_neon_db():
     """Set up the Neon DB by dropping existing tables, initializing structure, and seeding data."""
-    # Neon DB connection parameters
-    DB_NAME = "neondb"
-    DB_USER = "neondb_owner"
-    DB_PASSWORD = "npg_HfSoiV2l8gAF"  # Be careful with passwords in code
-    DB_HOST = "ep-yellow-bar-a5htbtp4-pooler.us-east-2.aws.neon.tech"
-    DB_PORT = "5432"
-    
     # Store original environment variables
     original_db_name = os.environ.get("DB_NAME")
     original_db_user = os.environ.get("DB_USER")
@@ -302,21 +295,14 @@ def setup_neon_db():
     original_db_port = os.environ.get("DB_PORT")
     
     try:
-        # Set environment variables for Neon DB
-        os.environ["DB_NAME"] = DB_NAME
-        os.environ["DB_USER"] = DB_USER
-        os.environ["DB_PASSWORD"] = DB_PASSWORD
-        os.environ["DB_HOST"] = DB_HOST
-        os.environ["DB_PORT"] = DB_PORT
-        
         # Connect to Neon DB
         print("Connecting to Neon DB...")
         conn = psycopg2.connect(
-            dbname=DB_NAME,
-            user=DB_USER,
-            password=DB_PASSWORD,
-            host=DB_HOST,
-            port=DB_PORT,
+            dbname=os.getenv("DB_NAME"),
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD"),
+            host=os.getenv("DB_HOST"),
+            port=os.getenv("DB_PORT"),
             cursor_factory=RealDictCursor
         )
         cur = conn.cursor()
