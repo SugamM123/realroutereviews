@@ -66,6 +66,31 @@ export default function RoutePage({ params }) {
     ? (reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length).toFixed(1)
     : 'N/A'
 
+  // Calculate average ratings for each category
+  const calculateAverageRatings = (reviews) => {
+    if (!reviews || reviews.length === 0) return null;
+    
+    const sum = {
+      punctuality: 0,
+      cleanliness: 0,
+      crowdedness: 0
+    };
+    
+    reviews.forEach(review => {
+      sum.punctuality += review.punctuality || review.rating;
+      sum.cleanliness += review.cleanliness || review.rating;
+      sum.crowdedness += review.crowdedness || review.rating;
+    });
+    
+    return {
+      punctuality: (sum.punctuality / reviews.length).toFixed(1),
+      cleanliness: (sum.cleanliness / reviews.length).toFixed(1),
+      crowdedness: (sum.crowdedness / reviews.length).toFixed(1)
+    };
+  };
+
+  const averageRatings = calculateAverageRatings(reviews);
+
   const stats = {
     onTime: `${routeData?.rating || 0}/5`,
     overall: `${routeData?.rating || 0}/5`,
@@ -73,28 +98,41 @@ export default function RoutePage({ params }) {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 bg-gray-100 min-h-screen">
-      <RouteHeader id={routeData.id} name={routeData.name} rating={averageRating} />
+    <div className="container mx-auto px-4 py-8 bg-gray-50 min-h-screen">
+      <RouteHeader 
+        id={routeData.id} 
+        name={routeData.name} 
+        rating={averageRating} 
+        description={routeData.description} 
+        stops={routeData.stops}
+        ratings={averageRatings}
+      />
       
-      <div className="mt-6 sm:mt-10">
-        <h2 className="text-xl font-semibold mb-4 sm:mb-6 text-black px-2">Reviews</h2>
+      <div className="mt-8 sm:mt-12">
+        <h2 className="text-2xl font-bold mb-6 text-red-700 border-b-2 border-red-200 pb-2">Reviews</h2>
         
         <ReviewForm routeId={id} onReviewAdded={handleReviewAdded} />
         
-        <div className="mt-6 mb-20">
+        <div className="mt-8 mb-20">
           {reviews.length > 0 ? (
-            <ReviewList reviews={reviews} />
+            <div className="space-y-4">
+              <p className="text-gray-600 font-medium">{reviews.length} {reviews.length === 1 ? 'Review' : 'Reviews'}</p>
+              <ReviewList reviews={reviews} />
+            </div>
           ) : (
-            <p className="text-gray-500 px-2">No reviews yet. Be the first to review this route!</p>
+            <div className="bg-white rounded-xl p-8 text-center border border-gray-200 shadow-sm">
+              <p className="text-gray-500 text-lg">No reviews yet. Be the first to review this route!</p>
+            </div>
           )}
         </div>
       </div>
 
-      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-10">
+      <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-10">
         <Link href="/">
-          <Button>
-            <Home className="mr-2" /> Home
-          </Button>
+          <button className="flex items-center justify-center bg-red-700 hover:bg-red-800 text-white font-medium py-3 px-6 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 group">
+            <Home className="mr-2 group-hover:animate-pulse" />
+            <span>Home</span>
+          </button>
         </Link>
       </div>
     </div>

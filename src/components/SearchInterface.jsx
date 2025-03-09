@@ -1,10 +1,9 @@
 'use client'
 
-import { Input } from "@/components/ui/input"
-import Image from "next/image"
-import Link from "next/link"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
+import Link from "next/link"
 
 export function SearchInterface() {
   const [routeNumber, setRouteNumber] = useState("")
@@ -18,38 +17,26 @@ export function SearchInterface() {
   }
 
   return (
-    <div className="w-full max-w-xl mx-auto px-4">
-      <form onSubmit={handleSearch} className="mb-4">
-        <div className="flex flex-col sm:flex-row items-center border-b border-b-2 border-gray-500 py-2">
-          <input
-            className="appearance-none bg-transparent border-none w-full text-gray-700 mb-2 sm:mb-0 sm:mr-3 py-1 px-2 leading-tight focus:outline-none"
-            type="text"
-            placeholder="Search for a route (e.g., 01, 02, Bonfire)"
-            value={routeNumber}
-            onChange={(e) => setRouteNumber(e.target.value)}
-          />
-          <button
-            className="w-full sm:w-auto flex-shrink-0 bg-red-700 hover:bg-red-800 border-red-700 hover:border-red-800 text-sm border-4 text-white py-1 px-4 rounded"
-            type="submit"
-          >
-            Search
-          </button>
-        </div>
+    <div className="w-full max-w-xl mx-auto">
+      <form onSubmit={handleSearch} className="flex flex-col sm:flex-row">
+        <input
+          className="flex-grow px-3 py-2 sm:px-4 sm:py-3 rounded-lg sm:rounded-r-none border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent text-sm sm:text-base"
+          type="text"
+          placeholder="Search for a route (e.g., 01, 02, Bonfire)"
+          value={routeNumber}
+          onChange={(e) => setRouteNumber(e.target.value)}
+        />
+        <button
+          className="mt-2 sm:mt-0 px-4 sm:px-6 py-2 sm:py-3 bg-red-700 text-white font-medium rounded-lg sm:rounded-l-none hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-opacity-50 transition-colors duration-200 text-sm sm:text-base"
+          type="submit"
+        >
+          Search
+        </button>
       </form>
-
-      <h2 className="text-lg text-center mb-4 mt-16 sm:mt-24 md:mt-32 lg:mt-40">Meet the Dev</h2>
-
-      <div className="flex justify-center mt-4">
-        <Link href="/about">
-          <Image 
-            src="/dev.png" 
-            alt="Meet the Dev" 
-            width={150} 
-            height={150} 
-            className="rounded-full cursor-pointer hover:opacity-90 transition-opacity"
-          />
-        </Link>
-      </div>
+      
+      <p className="mt-2 sm:mt-3 text-xs sm:text-sm text-gray-500">
+        Try searching for popular routes like "Bonfire", "01", or "MSC"
+      </p>
     </div>
   )
 }

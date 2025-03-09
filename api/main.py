@@ -40,8 +40,14 @@ class Review(ReviewBase):
     id: int
     created_at: Optional[str] = None
 
-class ReviewCreate(ReviewBase):
-    pass
+class ReviewCreate(BaseModel):
+    route_id: str
+    rating: int
+    punctuality: Optional[int] = None
+    cleanliness: Optional[int] = None
+    crowdedness: Optional[int] = None
+    comment: str
+    user_name: str
 
 # Routes
 @app.get("/")
@@ -144,40 +150,36 @@ def create_review(review: ReviewCreate):
     cur = conn.cursor()
     
     try:
-        # Check if the route exists
-        cur.execute("SELECT id FROM routes WHERE id = %s", (review.route_id,))
-        route = cur.fetchone()
-        
-        if not route:
-            raise HTTPException(status_code=404, detail=f"Route with ID {review.route_id} not found")
-        
-        # Insert the review
         cur.execute("""
-            INSERT INTO reviews (route_id, rating, comment, user_name)
-            VALUES (%s, %s, %s, %s)
-            RETURNING id, created_at
+            INSERT INTO reviews (route_id, rating, punctuality, cleanliness, crowdedness, comment, user_name)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            RETURNING *
         """, (
             review.route_id,
             review.rating,
+            review.punctuality,
+            review.cleanliness,
+            review.crowdedness,
             review.comment,
             review.user_name
         ))
         
-        result = cur.fetchone()
         conn.commit()
+        new_review = cur.fetchone()
         
         return {
-            "id": result["id"],
-            "route_id": review.route_id,
-            "rating": review.rating,
-            "comment": review.comment,
-            "user_name": review.user_name,
-            "created_at": result["created_at"].isoformat() if result["created_at"] else None
+            "id": new_review["id"],
+            "route_id": new_review["route_id"],
+            "rating": new_review["rating"],
+            "punctuality": new_review["punctuality"],
+            "cleanliness": new_review["cleanliness"],
+            "crowdedness": new_review["crowdedness"],
+            "comment": new_review["comment"],
+            "user_name": new_review["user_name"],
+            "created_at": new_review["created_at"].isoformat() if new_review["created_at"] else None
         }
     except Exception as e:
         conn.rollback()
-        if isinstance(e, HTTPException):
-            raise e
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         conn.close()
