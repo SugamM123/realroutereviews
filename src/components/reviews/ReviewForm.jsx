@@ -58,7 +58,7 @@ export function ReviewForm({ routeId, onReviewAdded }) {
   }
 
   return (
-    <div className="bg-white rounded-lg p-4 mb-6 border border-gray-200">
+    <div className="bg-white rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 border border-gray-200">
       <h2 className="text-lg font-semibold mb-3 text-black">Add Your Review</h2>
       
       {error && (
@@ -78,7 +78,7 @@ export function ReviewForm({ routeId, onReviewAdded }) {
           <label className="block text-sm text-gray-700 mb-1">Your Name (Optional)</label>
           <input
             type="text"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+            className="w-full px-3 py-2 text-sm sm:text-base border rounded focus:outline-none focus:ring-2 focus:ring-red-700"
             value={userName}
             onChange={(e) => setUserName(e.target.value)}
             placeholder="Anonymous"
@@ -87,7 +87,7 @@ export function ReviewForm({ routeId, onReviewAdded }) {
         
         <div className="mb-3">
           <label className="block text-sm text-gray-700 mb-1">Rating</label>
-          <div className="flex items-center">
+          <div className="flex flex-wrap items-center gap-1 sm:gap-2">
             {[1, 2, 3, 4, 5].map((star) => (
               <button
                 key={star}
@@ -109,7 +109,7 @@ export function ReviewForm({ routeId, onReviewAdded }) {
         <div className="mb-3">
           <label className="block text-sm text-gray-700 mb-1">Your Review</label>
           <textarea
-            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+            className="w-full px-3 py-2 text-sm sm:text-base border rounded focus:outline-none focus:ring-2 focus:ring-red-700"
             rows="3"
             value={comment}
             onChange={(e) => setComment(e.target.value)}
@@ -120,7 +120,7 @@ export function ReviewForm({ routeId, onReviewAdded }) {
         
         <button
           type="submit"
-          className="bg-red-700 hover:bg-red-800 text-white text-sm font-medium py-2 px-4 rounded"
+          className="w-full sm:w-auto bg-red-700 hover:bg-red-800 text-white font-medium py-2 px-4 rounded text-sm sm:text-base"
           disabled={isSubmitting}
         >
           {isSubmitting ? 'Submitting...' : 'Submit Review'}

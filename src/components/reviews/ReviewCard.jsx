@@ -13,10 +13,10 @@ export function ReviewCard({ review }) {
     : 'Unknown date';
 
   return (
-    <div className="bg-white rounded-lg p-4 border border-gray-200">
+    <div className="bg-white rounded-lg p-3 sm:p-4 border border-gray-200">
       <div className="flex justify-between items-start">
         <div>
-          <h3 className="font-medium text-base text-black">{review.user_name}</h3>
+          <h3 className="font-medium text-sm sm:text-base text-black">{review.user_name}</h3>
           <p className="text-gray-500 text-xs">{formattedDate}</p>
         </div>
         <div className="flex items-center">
@@ -24,7 +24,7 @@ export function ReviewCard({ review }) {
           <span className="ml-1 text-sm font-medium text-black">{review.rating}</span>
         </div>
       </div>
-      <p className="mt-2 text-sm text-gray-700">{review.comment}</p>
+      <p className="mt-2 text-xs sm:text-sm text-gray-700">{review.comment}</p>
     </div>
   )
 } 

@@ -73,26 +73,27 @@ export default function RoutePage({ params }) {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 bg-gray-100">
+    <div className="container mx-auto px-4 py-8 bg-gray-100 min-h-screen">
       <RouteHeader id={routeData.id} name={routeData.name} rating={averageRating} />
       
-      <div className="mt-10">
-        <h2 className="text-xl font-semibold mb-6 text-black">Reviews</h2>
+      <div className="mt-6 sm:mt-10">
+        <h2 className="text-xl font-semibold mb-4 sm:mb-6 text-black px-2">Reviews</h2>
         
         <ReviewForm routeId={id} onReviewAdded={handleReviewAdded} />
         
-        {reviews.length > 0 ? (
-          <ReviewList reviews={reviews} />
-        ) : (
-          <p className="text-gray-500">No reviews yet. Be the first to review this route!</p>
-        )}
+        <div className="mt-6 mb-20">
+          {reviews.length > 0 ? (
+            <ReviewList reviews={reviews} />
+          ) : (
+            <p className="text-gray-500 px-2">No reviews yet. Be the first to review this route!</p>
+          )}
+        </div>
       </div>
 
-      {/* Home button after any text car with more spacing from the review cards */}
-      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 mt-8">
+      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-10">
         <Link href="/">
           <Button>
-            <Home /> Home
+            <Home className="mr-2" /> Home
           </Button>
         </Link>
       </div>
