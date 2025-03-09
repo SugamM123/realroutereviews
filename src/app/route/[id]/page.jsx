@@ -5,73 +5,86 @@ import { RouteHeader } from "@/components/route/RouteHeader"
 import { RouteStats } from "@/components/route/RouteStats"
 import { ReviewList } from "@/components/reviews/ReviewList"
 import { ReviewForm } from "@/components/reviews/ReviewForm"
+import { getRouteById, getRouteReviews } from '@/lib/api'
 
 export default function RoutePage({ params }) {
   const { id } = params
   const [routeData, setRouteData] = useState(null)
+  const [reviews, setReviews] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    const fetchRoute = async () => {
+    async function fetchData() {
       try {
-        console.log('Fetching route data...'); // Debug log
-        const response = await fetch(`http://localhost:8000/routes/${id}`);
-        console.log('Response:', response); // Debug log
+        // Fetch route data
+        const route = await getRouteById(id)
+        setRouteData(route)
         
-        if (!response.ok) {
-          throw new Error(`Failed to fetch route ${id}`);
-        }
-        
-        const data = await response.json();
-        console.log('Received data:', data); // Debug log
-        
-        setRouteData(data);
+        // Fetch reviews
+        const reviewsData = await getRouteReviews(id)
+        setReviews(reviewsData)
       } catch (err) {
-        console.error('Error:', err);
-        setError(err.message);
+        console.error('Error fetching data:', err)
+        setError(`Failed to fetch route ${id}`)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
+    
+    fetchData()
+  }, [id])
 
-    fetchRoute();
-  }, [id]);
+  const handleReviewAdded = (newReview) => {
+    // Add the new review to the reviews list
+    setReviews((prevReviews) => [newReview, ...prevReviews])
+  }
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-200 flex items-center justify-center">
-        <div className="text-xl font-bold text-red-700">
-          Loading TAMU Route {id}...
-        </div>
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-2xl font-bold text-center">Loading...</h1>
       </div>
-    );
+    )
   }
 
-  if (error) {
+  if (error || !routeData) {
     return (
-      <div className="min-h-screen bg-gray-200 flex items-center justify-center">
-        <div className="text-xl font-bold text-red-700">
-          Error: {error}
-        </div>
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-2xl font-bold text-center text-red-600">
+          {error || 'Route not found'}
+        </h1>
       </div>
-    );
+    )
   }
+
+  // Calculate average rating from reviews
+  const averageRating = reviews.length > 0
+    ? (reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length).toFixed(1)
+    : 'N/A'
 
   const stats = {
     onTime: `${routeData?.rating || 0}/5`,
     overall: `${routeData?.rating || 0}/5`,
     reliability: `${routeData?.rating || 0}/5`
-  };
+  }
 
   return (
-    <div className="min-h-screen bg-gray-200 p-4 sm:p-6 md:p-8 lg:p-12">
-      <div className="max-w-4xl mx-auto">
-        <RouteHeader id={id} rating={routeData?.rating || 0} />
-        <RouteStats stats={stats} />
-        <ReviewForm routeId={id} />
-        <ReviewList reviews={routeData?.reviews || []} />
+    <div className="container mx-auto px-4 py-8">
+      <RouteHeader id={routeData.id} name={routeData.name} rating={averageRating} />
+      
+      <div className="mt-8">
+        <ReviewForm routeId={id} onReviewAdded={handleReviewAdded} />
+      </div>
+      
+      <div className="mt-8">
+        <h2 className="text-2xl font-semibold mb-4">Reviews</h2>
+        {reviews.length > 0 ? (
+          <ReviewList reviews={reviews} />
+        ) : (
+          <p className="text-gray-500">No reviews yet. Be the first to review this route!</p>
+        )}
       </div>
     </div>
-  );
+  )
 }

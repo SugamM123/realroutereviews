@@ -1,25 +1,30 @@
 'use client'
 
-import { StarIcon, UserIcon } from "lucide-react"
+import { StarIcon } from "lucide-react"
 
 export function ReviewCard({ review }) {
+  // Format the date
+  const formattedDate = review.created_at 
+    ? new Date(review.created_at).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      })
+    : 'Unknown date';
+
   return (
-    <div className="bg-gray-300 rounded-full p-4 sm:p-6">
-      <div className="flex items-center space-x-3">
-        <div className="bg-purple-200 rounded-full p-2">
-          <UserIcon className="h-6 w-6 text-purple-700" />
+    <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="flex justify-between items-start">
+        <div>
+          <h3 className="font-bold text-lg">{review.user_name}</h3>
+          <p className="text-gray-500 text-sm">{formattedDate}</p>
         </div>
-        <div className="flex-1">
-          <div className="flex items-center">
-            <h3 className="font-medium">{review.userName}</h3>
-            <div className="flex items-center ml-2">
-              <StarIcon className="h-4 w-4 text-yellow-500" />
-              <span className="ml-1 text-sm">{review.rating}</span>
-            </div>
-          </div>
-          <p className="text-sm mt-1">{review.comment}</p>
+        <div className="flex items-center">
+          <StarIcon className="h-5 w-5 text-yellow-500 fill-yellow-500" />
+          <span className="ml-1 font-semibold">{review.rating}</span>
         </div>
       </div>
+      <p className="mt-4 text-gray-700">{review.comment}</p>
     </div>
   )
 } 

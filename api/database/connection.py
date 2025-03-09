@@ -1,14 +1,27 @@
-import sqlite3
-from pathlib import Path
+import os
+import psycopg2
+from psycopg2.extras import RealDictCursor
+from dotenv import load_dotenv
 
-# Create database directory if it doesn't exist
-DB_DIR = Path(__file__).parent
-DB_DIR.mkdir(exist_ok=True)
-DB_PATH = DB_DIR / "tamu_routes.db"
+# Load environment variables from .env file
+load_dotenv()
+
+# Database connection parameters
+DB_NAME = os.getenv("DB_NAME", "rrr")
+DB_USER = os.getenv("DB_USER", "sugammishra")  # Use your actual username
+DB_PASSWORD = os.getenv("DB_PASSWORD", "")
+DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_PORT = os.getenv("DB_PORT", "5432")
 
 def get_db():
-    conn = sqlite3.connect(str(DB_PATH))
-    conn.row_factory = sqlite3.Row  # This allows accessing columns by name
+    conn = psycopg2.connect(
+        dbname=DB_NAME,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        host=DB_HOST,
+        port=DB_PORT,
+        cursor_factory=RealDictCursor  # This allows accessing columns by name
+    )
     return conn
 
 def init_db():
@@ -20,7 +33,8 @@ def init_db():
     CREATE TABLE IF NOT EXISTS routes (
         id TEXT PRIMARY KEY,
         name TEXT NOT NULL,
-        stops TEXT NOT NULL,  -- Stored as JSON string
+        description TEXT,
+        stops JSONB NOT NULL,
         schedule TEXT NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
@@ -29,7 +43,7 @@ def init_db():
     # Create reviews table
     cur.execute('''
     CREATE TABLE IF NOT EXISTS reviews (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id SERIAL PRIMARY KEY,
         route_id TEXT NOT NULL,
         rating INTEGER NOT NULL CHECK(rating >= 1 AND rating <= 5),
         comment TEXT NOT NULL,
