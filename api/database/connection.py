@@ -20,6 +20,7 @@ def get_db():
         password=DB_PASSWORD,
         host=DB_HOST,
         port=DB_PORT,
+        sslmode='require',  # Add this for Render
         cursor_factory=RealDictCursor  # This allows accessing columns by name
     )
     return conn
