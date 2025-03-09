@@ -34,46 +34,88 @@ export function ReviewForm({ routeId, onReviewAdded }) {
     const finalUserName = userName.trim() || "Anonymous"
 
     try {
+      // Create the review data
+      const reviewData = {
+        route_id: routeId,
+        rating: parseInt(ratings.overall),
+        punctuality: parseInt(ratings.punctuality),
+        cleanliness: parseInt(ratings.cleanliness),
+        crowdedness: parseInt(ratings.crowdedness),
+        comment,
+        user_name: finalUserName,
+      };
+      
+      console.log("Submitting review:", reviewData);
+      
+      // Use the existing fetch approach since submitReview isn't available
       const response = await fetch(`${API_BASE_URL}/reviews`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          route_id: routeId,
-          rating: parseInt(ratings.overall),
-          punctuality: parseInt(ratings.punctuality),
-          cleanliness: parseInt(ratings.cleanliness),
-          crowdedness: parseInt(ratings.crowdedness),
-          comment,
-          user_name: finalUserName,
-        }),
-      })
+        body: JSON.stringify(reviewData),
+      });
 
+      // Handle the response
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.detail || 'Failed to submit review')
+        let errorMessage = `Server error: ${response.status}`;
+        try {
+          const errorText = await response.text();
+          if (errorText) {
+            try {
+              const errorData = JSON.parse(errorText);
+              errorMessage = errorData.detail || errorMessage;
+            } catch (e) {
+              errorMessage = errorText || errorMessage;
+            }
+          }
+        } catch (e) {
+          errorMessage = `Server error: ${response.status} ${response.statusText}`;
+        }
+        throw new Error(errorMessage);
       }
 
-      const newReview = await response.json()
-      setSuccess(true)
-      setComment('')
+      // Check if response has content before parsing
+      const text = await response.text();
+      let newReview;
+      
+      if (text) {
+        try {
+          newReview = JSON.parse(text);
+        } catch (e) {
+          console.error("Invalid JSON response:", text);
+          throw new Error(`Invalid JSON response: ${text.substring(0, 100)}...`);
+        }
+      } else {
+        // If empty response but status OK, create a synthetic review
+        newReview = {
+          id: Date.now(), // Temporary ID
+          ...reviewData,
+          created_at: new Date().toISOString()
+        };
+      }
+      
+      console.log("Review submitted successfully:", newReview);
+      
+      setSuccess(true);
+      setComment('');
       setRatings({
         overall: 5,
         punctuality: 5,
         cleanliness: 5,
         crowdedness: 5
-      })
-      setUserName('')
+      });
+      setUserName('');
       
       // Notify parent component that a new review was added
       if (onReviewAdded) {
-        onReviewAdded(newReview)
+        onReviewAdded(newReview);
       }
     } catch (err) {
-      setError(err.message)
+      console.error("Review submission error:", err);
+      setError(err.message || "Failed to submit review. Please try again.");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
   }
 

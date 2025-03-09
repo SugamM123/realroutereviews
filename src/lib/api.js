@@ -1,29 +1,90 @@
-const API_BASE_URL = 'https://realroutereviews-api.onrender.com'; // Replace with your actual Render URL
-// const API_BASE_URL = 'http://localhost:8000';
+// Use local API for development, remote for production
+// const API_BASE_URL = 'http://localhost:8000'  // Local development server
+const API_BASE_URL = 'https://realroutereviews-api.onrender.com'; // Production server
 
-export async function getRoutes() {
-  try {
-    const response = await fetch(`${API_BASE_URL}/routes`);
-    if (!response.ok) {
-      throw new Error('Failed to fetch routes');
+export { API_BASE_URL };
+
+// Helper function to handle API responses safely
+export async function handleApiResponse(response) {
+  if (!response.ok) {
+    // Try to get error details if available
+    let errorMessage = `Server error: ${response.status}`;
+    try {
+      const errorText = await response.text();
+      if (errorText) {
+        try {
+          const errorData = JSON.parse(errorText);
+          errorMessage = errorData.detail || errorMessage;
+        } catch (e) {
+          // If not valid JSON, use the text directly
+          errorMessage = errorText || errorMessage;
+        }
+      }
+    } catch (e) {
+      // If text() fails, use status text
+      errorMessage = `Server error: ${response.status} ${response.statusText}`;
     }
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching routes:', error);
-    throw new Error('Failed to fetch routes');
+    throw new Error(errorMessage);
+  }
+
+  // Check if response has content before parsing
+  const text = await response.text();
+  if (!text) {
+    return null; // Return null for empty responses
+  }
+  
+  try {
+    return JSON.parse(text);
+  } catch (e) {
+    console.error("Invalid JSON response:", text);
+    throw new Error(`Invalid JSON response: ${text.substring(0, 100)}...`);
   }
 }
 
-export async function getRoute(id) {
+// Updated API functions using the helper
+export async function getRoutes() {
   try {
-    const response = await fetch(`${API_BASE_URL}/routes/${id}`);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch route with ID ${id}`);
-    }
-    return await response.json();
+    const response = await fetch(`${API_BASE_URL}/routes`);
+    return await handleApiResponse(response);
   } catch (error) {
-    console.error(`Error fetching route ${id}:`, error);
-    throw new Error(`Failed to fetch route with ID ${id}`);
+    console.error('Error fetching routes:', error);
+    throw error;
+  }
+}
+
+export async function getRoute(routeId) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/routes/${routeId}`);
+    return await handleApiResponse(response);
+  } catch (error) {
+    console.error(`Error fetching route ${routeId}:`, error);
+    throw error;
+  }
+}
+
+export async function getRouteReviews(routeId) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/routes/${routeId}/reviews`);
+    return await handleApiResponse(response);
+  } catch (error) {
+    console.error(`Error fetching reviews for route ${routeId}:`, error);
+    throw error;
+  }
+}
+
+export async function submitReview(reviewData) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/reviews`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(reviewData),
+    });
+    return await handleApiResponse(response);
+  } catch (error) {
+    console.error('Error submitting review:', error);
+    throw error;
   }
 }
 
@@ -53,28 +114,6 @@ export async function searchRoutes(query) {
   }
 }
 
-export async function createReview(reviewData) {
-  try {
-    const response = await fetch(`${API_BASE_URL}/reviews`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(reviewData),
-    });
-    
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.detail || 'Failed to create review');
-    }
-    
-    return await response.json();
-  } catch (error) {
-    console.error('Error creating review:', error);
-    throw error;
-  }
-}
-
 export async function getRouteById(id) {
   console.log(`Fetching route with ID: ${id} from ${API_BASE_URL}/routes/${id}`);
   try {
@@ -101,18 +140,5 @@ export async function getRouteById(id) {
   } catch (error) {
     console.error(`Error fetching route ${id}:`, error);
     throw new Error(`Failed to fetch route with ID ${id}`);
-  }
-}
-
-export async function getRouteReviews(routeId) {
-  try {
-    const response = await fetch(`${API_BASE_URL}/routes/${routeId}/reviews`);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch reviews for route ${routeId}`);
-    }
-    return await response.json();
-  } catch (error) {
-    console.error(`Error fetching reviews for route ${routeId}:`, error);
-    throw new Error(`Failed to fetch reviews for route ${routeId}`);
   }
 }
