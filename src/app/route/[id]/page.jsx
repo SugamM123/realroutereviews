@@ -70,15 +70,14 @@ export default function RoutePage({ params }) {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 bg-gray-100">
       <RouteHeader id={routeData.id} name={routeData.name} rating={averageRating} />
       
-      <div className="mt-8">
+      <div className="mt-10">
+        <h2 className="text-xl font-semibold mb-6 text-black">Reviews</h2>
+        
         <ReviewForm routeId={id} onReviewAdded={handleReviewAdded} />
-      </div>
-      
-      <div className="mt-8">
-        <h2 className="text-2xl font-semibold mb-4">Reviews</h2>
+        
         {reviews.length > 0 ? (
           <ReviewList reviews={reviews} />
         ) : (

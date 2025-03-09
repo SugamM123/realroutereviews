@@ -8,7 +8,7 @@ export function RouteHeader({ id, name, rating }) {
   const displayId = normalizeRouteId(id)
   
   return (
-    <div className="bg-gray-300 rounded-full p-4 sm:p-6 md:p-8 lg:p-10 text-black">
+    <div className="bg-gray-200 rounded-full p-4 sm:p-6 md:p-8 lg:p-10 text-black">
       <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-red-700 text-center">
         {name} {displayId}
       </h1>

@@ -17,6 +17,9 @@ export function ReviewForm({ routeId, onReviewAdded }) {
     setError(null)
     setSuccess(false)
 
+    // Use "Anonymous" if no name is provided
+    const finalUserName = userName.trim() || "Anonymous"
+
     try {
       const response = await fetch('http://localhost:8000/reviews', {
         method: 'POST',
@@ -27,7 +30,7 @@ export function ReviewForm({ routeId, onReviewAdded }) {
           route_id: routeId,
           rating: parseInt(rating),
           comment,
-          user_name: userName,
+          user_name: finalUserName,
         }),
       })
 
@@ -40,6 +43,7 @@ export function ReviewForm({ routeId, onReviewAdded }) {
       setSuccess(true)
       setComment('')
       setRating(5)
+      setUserName('')
       
       // Notify parent component that a new review was added
       if (onReviewAdded) {
@@ -53,35 +57,35 @@ export function ReviewForm({ routeId, onReviewAdded }) {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-      <h2 className="text-xl font-semibold mb-4">Write a Review</h2>
+    <div className="bg-white rounded-lg p-4 mb-6 border border-gray-200">
+      <h2 className="text-lg font-semibold mb-3 text-black">Add Your Review</h2>
       
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-3 py-2 rounded mb-3 text-sm">
           {error}
         </div>
       )}
       
       {success && (
-        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-          Your review has been submitted successfully!
+        <div className="bg-green-100 border border-green-400 text-green-700 px-3 py-2 rounded mb-3 text-sm">
+          Your review has been submitted!
         </div>
       )}
       
       <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label className="block text-gray-700 mb-2">Your Name</label>
+        <div className="mb-3">
+          <label className="block text-sm text-gray-700 mb-1">Your Name (Optional)</label>
           <input
             type="text"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
             value={userName}
             onChange={(e) => setUserName(e.target.value)}
-            required
+            placeholder="Anonymous"
           />
         </div>
         
-        <div className="mb-4">
-          <label className="block text-gray-700 mb-2">Rating</label>
+        <div className="mb-3">
+          <label className="block text-sm text-gray-700 mb-1">Rating</label>
           <div className="flex items-center">
             {[1, 2, 3, 4, 5].map((star) => (
               <button
@@ -91,30 +95,31 @@ export function ReviewForm({ routeId, onReviewAdded }) {
                 className="mr-1 focus:outline-none"
               >
                 <StarIcon
-                  className={`h-6 w-6 ${
+                  className={`h-5 w-5 ${
                     star <= rating ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'
                   }`}
                 />
               </button>
             ))}
-            <span className="ml-2 text-gray-700">{rating} of 5</span>
+            <span className="ml-2 text-sm text-gray-700">{rating} of 5</span>
           </div>
         </div>
         
-        <div className="mb-4">
-          <label className="block text-gray-700 mb-2">Your Review</label>
+        <div className="mb-3">
+          <label className="block text-sm text-gray-700 mb-1">Your Review</label>
           <textarea
-            className="w-full px-3 py-2 border border-gray-300 rounded-md"
-            rows="4"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+            rows="3"
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             required
+            placeholder="Share your experience with this route..."
           ></textarea>
         </div>
         
         <button
           type="submit"
-          className="bg-red-700 hover:bg-red-800 text-white font-bold py-2 px-4 rounded"
+          className="bg-red-700 hover:bg-red-800 text-white text-sm font-medium py-2 px-4 rounded"
           disabled={isSubmitting}
         >
           {isSubmitting ? 'Submitting...' : 'Submit Review'}
