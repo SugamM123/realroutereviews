@@ -1,6 +1,6 @@
 // Use local API for development, remote for production
 // const API_BASE_URL = 'http://localhost:8000'  // Local development server
-const API_BASE_URL = 'https://realroutereviews-api.onrender.com'; // Production server
+// const API_BASE_URL = 'https://realroutereviews-api.onrender.com'; // Production server
 
 export { API_BASE_URL };
 
@@ -104,41 +104,35 @@ export async function getReviewsForRoute(routeId) {
 export async function searchRoutes(query) {
   try {
     const response = await fetch(`${API_BASE_URL}/search?q=${encodeURIComponent(query)}`);
-    if (!response.ok) {
-      throw new Error('Failed to fetch routes');
-    }
-    return await response.json();
+    return await handleApiResponse(response);
   } catch (error) {
     console.error('Error searching routes:', error);
-    return [];
+    return []; // Return empty array on error
   }
 }
 
 export async function getRouteById(id) {
-  console.log(`Fetching route with ID: ${id} from ${API_BASE_URL}/routes/${id}`);
   try {
-    const response = await fetch(`${API_BASE_URL}/routes/${id}`);
-    console.log('Response status:', response.status);
-    
-    const text = await response.text();
-    console.log('Raw response:', text);
-    
-    let data;
-    try {
-      data = JSON.parse(text);
-      console.log('Parsed data:', data);
-    } catch (e) {
-      console.error('Failed to parse JSON:', e);
-      throw new Error(`Failed to parse response for route ${id}`);
-    }
+    // First try to get the route directly by ID
+    const response = await fetch(`${API_BASE_URL}/routes/${encodeURIComponent(id)}`);
     
     if (!response.ok) {
-      throw new Error(`Failed to fetch route with ID ${id}`);
+      // If not found by ID, try searching
+      const searchResponse = await fetch(`${API_BASE_URL}/search?q=${encodeURIComponent(id)}`);
+      const searchResults = await handleApiResponse(searchResponse);
+      
+      if (searchResults && searchResults.length > 0) {
+        // Use the first search result
+        const routeResponse = await fetch(`${API_BASE_URL}/routes/${searchResults[0].id}`);
+        return await handleApiResponse(routeResponse);
+      }
+      
+      throw new Error(`Route not found: ${id}`);
     }
     
-    return data;
+    return await handleApiResponse(response);
   } catch (error) {
     console.error(`Error fetching route ${id}:`, error);
-    throw new Error(`Failed to fetch route with ID ${id}`);
+    throw error;
   }
 }

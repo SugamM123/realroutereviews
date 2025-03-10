@@ -89,24 +89,27 @@ def get_route(route_id: str):
     cur = conn.cursor()
     
     try:
-        # First try exact match
+        # First try exact match on ID
         cur.execute("SELECT * FROM routes WHERE id = %s", (route_id,))
         route = cur.fetchone()
         
-        # If not found, try case-insensitive and zero-stripped match
+        # If not found, try case-insensitive match on name
         if not route:
-            normalized_id = route_id.lstrip('0').lower()
+            cur.execute("SELECT * FROM routes WHERE LOWER(name) = LOWER(%s)", (route_id,))
+            route = cur.fetchone()
+        
+        # If still not found, try numeric ID matching (for "1" to match "01")
+        if not route and route_id.isdigit():
+            # Try to match with or without leading zeros
             cur.execute("""
                 SELECT * FROM routes 
-                WHERE 
-                    LOWER(id) = LOWER(%s) OR 
-                    REPLACE(LOWER(id), '0', '') = %s
+                WHERE REPLACE(id, '0', '') = %s
                 LIMIT 1
-            """, (route_id, normalized_id))
+            """, (route_id.lstrip('0'),))
             route = cur.fetchone()
         
         if not route:
-            raise HTTPException(status_code=404, detail=f"Route with ID {route_id} not found")
+            raise HTTPException(status_code=404, detail=f"Route with ID or name '{route_id}' not found")
         
         # Check if stops is already a Python object or a JSON string
         stops = route["stops"]
