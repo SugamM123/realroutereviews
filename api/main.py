@@ -192,12 +192,17 @@ def search_routes(q: str):
     cur = conn.cursor()
     
     try:
-        # Search by ID or name
+        # Normalize query: remove leading zeros for numeric searches
+        normalized_q = q.lstrip('0') if q.isdigit() else q
+        
         cur.execute("""
             SELECT * FROM routes 
-            WHERE id ILIKE %s OR name ILIKE %s
+            WHERE 
+                id ILIKE %s OR 
+                name ILIKE %s OR
+                id = %s  # Match exact ID after normalization
             ORDER BY id
-        """, (f"%{q}%", f"%{q}%"))
+        """, (f"%{q}%", f"%{q}%", normalized_q))
         
         routes_data = cur.fetchall()
         
