@@ -89,23 +89,23 @@ def get_route(route_id: str):
     cur = conn.cursor()
     
     try:
-        # First try exact match on ID
+        # First try exact match
         cur.execute("SELECT * FROM routes WHERE id = %s", (route_id,))
         route = cur.fetchone()
         
-        # If not found, try case-insensitive match on name
+        # If not found and input is numeric, try with leading zeros
+        if not route and route_id.isdigit():
+            # Try with different numbers of leading zeros (0, 00, 000)
+            for i in range(1, 4):  # Try up to 3 leading zeros
+                padded_id = route_id.zfill(i + len(route_id))
+                cur.execute("SELECT * FROM routes WHERE id = %s", (padded_id,))
+                route = cur.fetchone()
+                if route:
+                    break
+        
+        # If still not found, try case-insensitive name match
         if not route:
             cur.execute("SELECT * FROM routes WHERE LOWER(name) = LOWER(%s)", (route_id,))
-            route = cur.fetchone()
-        
-        # If still not found, try numeric ID matching (for "1" to match "01")
-        if not route and route_id.isdigit():
-            # Try to match with or without leading zeros
-            cur.execute("""
-                SELECT * FROM routes 
-                WHERE REPLACE(id, '0', '') = %s
-                LIMIT 1
-            """, (route_id.lstrip('0'),))
             route = cur.fetchone()
         
         if not route:
@@ -121,7 +121,7 @@ def get_route(route_id: str):
             "id": route["id"],
             "name": route["name"],
             "description": route["description"],
-            "stops": stops,  # Use the parsed stops
+            "stops": stops,
             "schedule": route["schedule"],
             "created_at": route["created_at"].isoformat() if route["created_at"] else None
         }
@@ -208,23 +208,31 @@ def search_routes(q: str):
     cur = conn.cursor()
     
     try:
-        # Case-insensitive search with multiple matching strategies
-        cur.execute("""
-            SELECT * FROM routes 
-            WHERE 
-                id ILIKE %s OR 
-                name ILIKE %s OR
-                LOWER(id) = LOWER(%s) OR  -- Exact match with case insensitivity
-                REPLACE(id, '0', '') = %s  -- Match numeric IDs with/without leading zeros
-            ORDER BY id
-        """, (
-            f"%{q}%", 
-            f"%{q}%",
-            q.lstrip('0'),  # For numeric ID matches
-            q.lstrip('0')   # For zero-stripped matches
-        ))
+        routes_data = []
         
-        routes_data = cur.fetchall()
+        # First try exact match
+        cur.execute("SELECT * FROM routes WHERE id = %s OR LOWER(name) = LOWER(%s)", (q, q))
+        exact_matches = cur.fetchall()
+        routes_data.extend(exact_matches)
+        
+        # If input is numeric, try with leading zeros
+        if q.isdigit() and not exact_matches:
+            for i in range(1, 4):  # Try up to 3 leading zeros
+                padded_id = q.zfill(i + len(q))
+                cur.execute("SELECT * FROM routes WHERE id = %s", (padded_id,))
+                padded_matches = cur.fetchall()
+                routes_data.extend(padded_matches)
+                if padded_matches:
+                    break
+        
+        # If no exact matches found, try partial matches
+        if not routes_data:
+            cur.execute("""
+                SELECT * FROM routes 
+                WHERE id ILIKE %s OR name ILIKE %s
+                ORDER BY id
+            """, (f"%{q}%", f"%{q}%"))
+            routes_data = cur.fetchall()
         
         routes = []
         for route in routes_data:
