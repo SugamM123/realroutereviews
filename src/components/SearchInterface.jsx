@@ -11,10 +11,10 @@ export function SearchInterface() {
 
   const handleSearch = (e) => {
     e.preventDefault()
-    // Normalize input: trim and remove leading zeros for numeric inputs
-    const normalizedInput = routeNumber.trim().replace(/^0+/, '')
-    if (normalizedInput) {
-      router.push(`/route/${normalizedInput}`)
+    const rawInput = routeNumber.trim()
+    if (rawInput) {
+        // Send raw input to backend for advanced handling
+        router.push(`/route/${encodeURIComponent(rawInput)}`)
     }
   }
 

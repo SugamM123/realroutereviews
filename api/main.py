@@ -89,8 +89,21 @@ def get_route(route_id: str):
     cur = conn.cursor()
     
     try:
+        # First try exact match
         cur.execute("SELECT * FROM routes WHERE id = %s", (route_id,))
         route = cur.fetchone()
+        
+        # If not found, try case-insensitive and zero-stripped match
+        if not route:
+            normalized_id = route_id.lstrip('0').lower()
+            cur.execute("""
+                SELECT * FROM routes 
+                WHERE 
+                    LOWER(id) = LOWER(%s) OR 
+                    REPLACE(LOWER(id), '0', '') = %s
+                LIMIT 1
+            """, (route_id, normalized_id))
+            route = cur.fetchone()
         
         if not route:
             raise HTTPException(status_code=404, detail=f"Route with ID {route_id} not found")
@@ -192,17 +205,21 @@ def search_routes(q: str):
     cur = conn.cursor()
     
     try:
-        # Normalize query: remove leading zeros for numeric searches
-        normalized_q = q.lstrip('0') if q.isdigit() else q
-        
+        # Case-insensitive search with multiple matching strategies
         cur.execute("""
             SELECT * FROM routes 
             WHERE 
                 id ILIKE %s OR 
                 name ILIKE %s OR
-                id = %s  # Match exact ID after normalization
+                LOWER(id) = LOWER(%s) OR  -- Exact match with case insensitivity
+                REPLACE(id, '0', '') = %s  -- Match numeric IDs with/without leading zeros
             ORDER BY id
-        """, (f"%{q}%", f"%{q}%", normalized_q))
+        """, (
+            f"%{q}%", 
+            f"%{q}%",
+            q.lstrip('0'),  # For numeric ID matches
+            q.lstrip('0')   # For zero-stripped matches
+        ))
         
         routes_data = cur.fetchall()
         
