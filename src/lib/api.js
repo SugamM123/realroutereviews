@@ -72,15 +72,21 @@ export async function getRouteReviews(routeId) {
   }
 }
 
-export async function submitReview(reviewData) {
+export async function submitReview(routeId, rating, comment, userName) {
   try {
     const response = await fetch(`${API_BASE_URL}/reviews`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(reviewData),
+      body: JSON.stringify({
+        route_id: routeId,
+        rating,
+        comment,
+        user_name: userName,
+      }),
     });
+    
     return await handleApiResponse(response);
   } catch (error) {
     console.error('Error submitting review:', error);

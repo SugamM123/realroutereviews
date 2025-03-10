@@ -43,9 +43,6 @@ class Review(ReviewBase):
 class ReviewCreate(BaseModel):
     route_id: str
     rating: int
-    punctuality: Optional[int] = None
-    cleanliness: Optional[int] = None
-    crowdedness: Optional[int] = None
     comment: str
     user_name: str
 
@@ -161,30 +158,52 @@ def get_route_reviews(route_id: str):
         conn.close()
 
 @app.post("/reviews", response_model=Review)
-def create_review(review: ReviewCreate):
+def create_review_direct(review: ReviewCreate):
     conn = get_db()
     cur = conn.cursor()
     
     try:
+        # First try to find the route by exact ID
+        cur.execute("SELECT id FROM routes WHERE id = %s", (review.route_id,))
+        route = cur.fetchone()
+        
+        # If not found and it might be a name, try to find by name
+        if not route:
+            cur.execute("SELECT id FROM routes WHERE LOWER(name) = LOWER(%s)", (review.route_id,))
+            route = cur.fetchone()
+            
+        # If still not found and it's numeric, try with leading zeros
+        if not route and review.route_id.isdigit():
+            # Try with different numbers of leading zeros
+            for i in range(1, 4):
+                padded_id = review.route_id.zfill(i + len(review.route_id))
+                cur.execute("SELECT id FROM routes WHERE id = %s", (padded_id,))
+                route = cur.fetchone()
+                if route:
+                    break
+        
+        if not route:
+            raise HTTPException(status_code=404, detail=f"Route with ID or name '{review.route_id}' not found")
+        
+        # Use the actual route ID from the database
+        actual_route_id = route["id"]
+        
+        # Insert the review with the correct route_id
         cur.execute("""
             INSERT INTO reviews (route_id, rating, comment, user_name)
             VALUES (%s, %s, %s, %s)
-            RETURNING *
+            RETURNING id, route_id, rating, comment, user_name, created_at
         """, (
-            review.route_id,
+            actual_route_id,  # Use the actual route ID from the database
             review.rating,
             review.comment,
             review.user_name
         ))
         
-        conn.commit()
         new_review = cur.fetchone()
+        conn.commit()
         
-        if not new_review:
-            raise HTTPException(status_code=500, detail="Failed to create review")
-        
-        # Convert to dict and ensure all fields are present
-        result = {
+        return {
             "id": new_review["id"],
             "route_id": new_review["route_id"],
             "rating": new_review["rating"],
@@ -192,15 +211,20 @@ def create_review(review: ReviewCreate):
             "user_name": new_review["user_name"],
             "created_at": new_review["created_at"].isoformat() if new_review["created_at"] else None
         }
-        
-        return result
     except Exception as e:
         conn.rollback()
-        # Log the actual error
-        print(f"Error creating review: {str(e)}")
+        if isinstance(e, HTTPException):
+            raise e
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         conn.close()
+
+@app.post("/routes/{route_id}/reviews", response_model=Review)
+def create_review_nested(route_id: str, review: ReviewCreate):
+    # Set the route_id from the URL parameter
+    review.route_id = route_id
+    # Reuse the direct endpoint logic
+    return create_review_direct(review)
 
 @app.get("/search", response_model=List[Route])
 def search_routes(q: str):

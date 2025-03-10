@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { StarIcon, ClockIcon, BusIcon, UserIcon } from "lucide-react"
 import { API_BASE_URL } from '@/lib/api'
 
-export function ReviewForm({ routeId, onReviewAdded }) {
+export function ReviewForm({ routeId, routeData, onReviewAdded }) {
   const [ratings, setRatings] = useState({
     overall: 5,
     punctuality: 5,
@@ -16,6 +16,9 @@ export function ReviewForm({ routeId, onReviewAdded }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(false)
+
+  // Use the actual route ID from the database, not the URL parameter
+  const actualRouteId = routeData?.id || routeId;
 
   const handleRatingChange = (category, value) => {
     setRatings(prev => ({
@@ -34,90 +37,61 @@ export function ReviewForm({ routeId, onReviewAdded }) {
     const finalUserName = userName.trim() || "Anonymous"
 
     try {
-      // Create the review data
-      const reviewData = {
-        route_id: routeId,
-        rating: parseInt(ratings.overall),
-        punctuality: parseInt(ratings.punctuality),
-        cleanliness: parseInt(ratings.cleanliness),
-        crowdedness: parseInt(ratings.crowdedness),
-        comment,
-        user_name: finalUserName,
-      };
-      
-      console.log("Submitting review:", reviewData);
-      
-      // Use the existing fetch approach since submitReview isn't available
+      // Use the direct /reviews endpoint
       const response = await fetch(`${API_BASE_URL}/reviews`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(reviewData),
+        body: JSON.stringify({
+          route_id: routeId,
+          rating: ratings.overall,
+          comment: comment.trim(),
+          user_name: finalUserName,
+        }),
       });
 
-      // Handle the response
+      // Handle non-OK responses
       if (!response.ok) {
-        let errorMessage = `Server error: ${response.status}`;
+        let errorMessage = `Error: ${response.status}`;
         try {
-          const errorText = await response.text();
-          if (errorText) {
-            try {
-              const errorData = JSON.parse(errorText);
-              errorMessage = errorData.detail || errorMessage;
-            } catch (e) {
-              errorMessage = errorText || errorMessage;
-            }
-          }
+          const errorData = await response.json();
+          errorMessage = errorData.detail || errorMessage;
         } catch (e) {
-          errorMessage = `Server error: ${response.status} ${response.statusText}`;
+          // If response is not JSON
+          const text = await response.text();
+          errorMessage = text || errorMessage;
         }
         throw new Error(errorMessage);
       }
 
-      // Check if response has content before parsing
-      const text = await response.text();
-      let newReview;
+      // Parse the response
+      const newReview = await response.json();
       
-      if (text) {
-        try {
-          newReview = JSON.parse(text);
-        } catch (e) {
-          console.error("Invalid JSON response:", text);
-          throw new Error(`Invalid JSON response: ${text.substring(0, 100)}...`);
-        }
-      } else {
-        // If empty response but status OK, create a synthetic review
-        newReview = {
-          id: Date.now(), // Temporary ID
-          ...reviewData,
-          created_at: new Date().toISOString()
-        };
-      }
-      
-      console.log("Review submitted successfully:", newReview);
-      
+      // Show success message
       setSuccess(true);
+      
+      // Reset form
       setComment('');
+      setUserName('');
       setRatings({
         overall: 5,
         punctuality: 5,
         cleanliness: 5,
         crowdedness: 5
       });
-      setUserName('');
       
-      // Notify parent component that a new review was added
+      // Notify parent component
       if (onReviewAdded) {
         onReviewAdded(newReview);
       }
-    } catch (err) {
-      console.error("Review submission error:", err);
-      setError(err.message || "Failed to submit review. Please try again.");
+    } catch (error) {
+      console.error('Error submitting review:', error);
+      setError(error.message || 'Failed to submit review. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
-  }
+  };
 
   // Rating component for each category
   const RatingSelector = ({ category, label, icon: Icon }) => (
@@ -148,21 +122,18 @@ export function ReviewForm({ routeId, onReviewAdded }) {
   )
 
   return (
-    <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100">
-      <h3 className="text-xl font-semibold mb-6 text-red-700">Add Your Review</h3>
+    <div className="bg-white rounded-lg shadow-md p-6">
+      <h3 className="text-xl font-semibold mb-4">Add Your Review</h3>
       
-      {success && (
-        <div className="mb-6 p-3 bg-green-100 text-green-800 rounded-lg flex items-center">
-          <svg className="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-          </svg>
-          Your review has been submitted successfully!
+      {error && (
+        <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+          {error}
         </div>
       )}
       
-      {error && (
-        <div className="mb-6 p-3 bg-red-100 text-red-800 rounded-lg">
-          Error: {error}
+      {success && (
+        <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded">
+          Your review has been submitted successfully!
         </div>
       )}
       

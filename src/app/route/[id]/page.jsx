@@ -9,6 +9,7 @@ import { getRouteById, getRouteReviews } from '@/lib/api'
 import { Button } from "@/components/ui/button"
 import { Home } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 export default function RoutePage({ params }) {
   const { id } = params
@@ -16,6 +17,7 @@ export default function RoutePage({ params }) {
   const [reviews, setReviews] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const router = useRouter()
 
   useEffect(() => {
     async function fetchData() {
@@ -24,8 +26,13 @@ export default function RoutePage({ params }) {
         const route = await getRouteById(id)
         setRouteData(route)
         
+        // If the URL doesn't match the canonical ID, redirect
+        if (route.id !== id) {
+          router.replace(`/route/${route.id}`, undefined, { shallow: true });
+        }
+        
         // Fetch reviews
-        const reviewsData = await getRouteReviews(id)
+        const reviewsData = await getRouteReviews(route.id)
         setReviews(reviewsData)
       } catch (err) {
         console.error('Error fetching data:', err)
@@ -36,7 +43,7 @@ export default function RoutePage({ params }) {
     }
     
     fetchData()
-  }, [id])
+  }, [id, router])
 
   const handleReviewAdded = (newReview) => {
     // Add the new review to the reviews list
@@ -111,7 +118,11 @@ export default function RoutePage({ params }) {
       <div className="mt-8 sm:mt-12">
         <h2 className="text-2xl font-bold mb-6 text-red-700 border-b-2 border-red-200 pb-2">Reviews</h2>
         
-        <ReviewForm routeId={id} onReviewAdded={handleReviewAdded} />
+        <ReviewForm 
+          routeId={id} 
+          routeData={routeData} 
+          onReviewAdded={handleReviewAdded} 
+        />
         
         <div className="mt-8 mb-20">
           {reviews.length > 0 ? (
