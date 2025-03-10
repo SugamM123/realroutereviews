@@ -1,6 +1,6 @@
 // Use local API for development, remote for production
-const API_BASE_URL = 'http://localhost:8000'  // Local development server
-// const API_BASE_URL = 'https://realroutereviews-api.onrender.com'; // Production server
+// const API_BASE_URL = 'http://localhost:8000'  // Local development server
+const API_BASE_URL = 'https://realroutereviews-api.onrender.com'; // Production server
 
 export { API_BASE_URL };
 
